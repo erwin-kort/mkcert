@@ -59,7 +59,7 @@ func (m *mkcert) makeCert(hosts []string) {
 	// Certificates last for 2 years and 3 months, which is always less than
 	// 825 days, the limit that macOS/iOS apply to all certificates,
 	// including custom roots. See https://support.apple.com/en-us/HT210176.
-	expiration := time.Now().AddDate(2, 3, 0)
+	expires := time.Now().AddDate(0, 0, m.expires)
 
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
@@ -68,7 +68,7 @@ func (m *mkcert) makeCert(hosts []string) {
 			OrganizationalUnit: []string{userAndHostname},
 		},
 
-		NotBefore: time.Now(), NotAfter: expiration,
+		NotBefore: time.Now(), NotAfter: expires,
 
 		KeyUsage: x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 	}
@@ -142,7 +142,7 @@ func (m *mkcert) makeCert(hosts []string) {
 		log.Printf("\nThe legacy PKCS#12 encryption password is the often hardcoded default \"changeit\" ℹ️\n\n")
 	}
 
-	log.Printf("It will expire on %s 🗓\n\n", expiration.Format("2 January 2006"))
+	log.Printf("It will expire on %s 🗓\n\n", expires.Format("2 January 2006"))
 }
 
 func (m *mkcert) printHosts(hosts []string) {

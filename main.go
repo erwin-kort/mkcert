@@ -41,12 +41,18 @@ const shortUsage = `Usage of mkcert:
 	$ mkcert "*.example.it"
 	Generate "_wildcard.example.it.pem" and "_wildcard.example.it-key.pem".
 
+	$ mkcert -e 10 example.org
+	Generate "example.org.pem" and "example.org-key.pem", valid for 10 days.
+
 	$ mkcert -uninstall
 	Uninstall the local CA (but do not delete it).
 
 `
 
 const advancedUsage = `Advanced options:
+
+	-e
+		Set an expiration date.
 
 	-cert-file FILE, -key-file FILE, -p12-file FILE
 	    Customize the output paths.
@@ -102,6 +108,7 @@ func main() {
 		certFileFlag  = flag.String("cert-file", "", "")
 		keyFileFlag   = flag.String("key-file", "", "")
 		p12FileFlag   = flag.String("p12-file", "", "")
+		expiresFlag   = flag.Int("e", 365, "")
 		versionFlag   = flag.Bool("version", false, "")
 	)
 	flag.Usage = func() {
@@ -146,6 +153,7 @@ func main() {
 		installMode: *installFlag, uninstallMode: *uninstallFlag, csrPath: *csrFlag,
 		pkcs12: *pkcs12Flag, ecdsa: *ecdsaFlag, client: *clientFlag,
 		certFile: *certFileFlag, keyFile: *keyFileFlag, p12File: *p12FileFlag,
+		expires: *expiresFlag,
 	}).Run(flag.Args())
 }
 
@@ -157,6 +165,7 @@ type mkcert struct {
 	pkcs12, ecdsa, client      bool
 	keyFile, certFile, p12File string
 	csrPath                    string
+	expires                    int
 
 	CAROOT string
 	caCert *x509.Certificate
